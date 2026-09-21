@@ -9,6 +9,7 @@ import Shop from '../views/Shop.vue'
 import ShopDetail from '../views/ShopDetail.vue'
 import ShopAuth from '../views/ShopAuth.vue'
 import ShopOrders from '../views/ShopOrders.vue'
+import Account from '../views/Account.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -24,6 +25,7 @@ const router = createRouter({
     { path: '/contact', component: Contact },
     { path: '/shop', component: Shop },
     { path: '/shop/login', component: ShopAuth },
+    { path: '/account', component: Account },
     { path: '/shop/orders', component: ShopOrders },
     { path: '/shop/:id', component: ShopDetail }
   ]
@@ -32,7 +34,7 @@ const router = createRouter({
 export default router
 
 router.beforeEach((to) => {
-  if (to.path === '/shop/orders' && !localStorage.getItem('archnova-shop-token')) {
-    return '/shop/login?redirect=/shop/orders'
+  if ((to.path === '/shop/orders' || to.path === '/account') && !localStorage.getItem('archnova-shop-token')) {
+    return `/shop/login?redirect=${to.path}`
   }
 })

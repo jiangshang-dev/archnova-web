@@ -8,8 +8,7 @@
         </div>
         <div>
           <router-link to="/shop/orders">我的订单</router-link>
-          <span v-if="profile"> · {{ profile.nickname }} · {{ profile.points }} 积分</span>
-          <router-link v-else to="/shop/login"> 登录</router-link>
+          <span v-if="shopUser.username"> · {{ shopUser.nickname || shopUser.username }} · {{ shopUser.points }} 积分</span>
         </div>
       </div>
       <div class="grid-3">
@@ -27,9 +26,9 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import http, { fileUrl } from '../api/http'
+import { shopUser } from '../store/shopUser'
 
 const products = ref([])
-const profile = ref(null)
 
 function yuan(cent) {
   return ((cent || 0) / 100).toFixed(2)
@@ -37,8 +36,5 @@ function yuan(cent) {
 
 onMounted(async () => {
   products.value = await http.get('/api/open/shop/products')
-  if (localStorage.getItem('archnova-shop-token')) {
-    profile.value = await http.get('/api/shop/me').catch(() => null)
-  }
 })
 </script>

@@ -11,11 +11,13 @@ CREATE TABLE IF NOT EXISTS shop_customer (
     username    VARCHAR(64)  NOT NULL,
     password    VARCHAR(128) NOT NULL,
     nickname    VARCHAR(64)  NULL,
+    email       VARCHAR(128) NULL,
     points      INT          NOT NULL DEFAULT 0,
     status      TINYINT      NOT NULL DEFAULT 1,
     create_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY uk_shop_username (username)
+    UNIQUE KEY uk_shop_username (username),
+    UNIQUE KEY uk_shop_email (email)
 ) COMMENT '商城买家';
 
 CREATE TABLE IF NOT EXISTS shop_product (
@@ -65,3 +67,14 @@ SELECT '微服务低代码平台源码',
        1,
        1
 WHERE NOT EXISTS (SELECT 1 FROM shop_product WHERE title = '微服务低代码平台源码');
+
+SET @email_col := (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'shop_customer' AND COLUMN_NAME = 'email'
+);
+SET @email_sql := IF(@email_col = 0,
+    'ALTER TABLE shop_customer ADD COLUMN email VARCHAR(128) NULL COMMENT ''邮箱'' AFTER nickname, ADD UNIQUE KEY uk_shop_email (email)',
+    'SELECT 1');
+PREPARE email_stmt FROM @email_sql;
+EXECUTE email_stmt;
+DEALLOCATE PREPARE email_stmt;

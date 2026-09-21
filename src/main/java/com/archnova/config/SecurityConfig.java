@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> writeJson(response, 401, "请先登录"))
                         .accessDeniedHandler((request, response, accessDeniedException) -> writeJson(response, 403, "没有权限")))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/admin/login", "/api/shop/login", "/api/shop/register").permitAll()
+                        .requestMatchers("/api/admin/login", "/api/shop/login", "/api/shop/register", "/api/shop/email-code").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/shop/**").hasRole("CUSTOMER")
                         .anyRequest().permitAll())

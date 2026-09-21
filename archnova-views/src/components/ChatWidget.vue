@@ -1,11 +1,19 @@
 <template>
-  <button class="chat-fab" type="button" @click="open = !open">{{ open ? '关' : '聊' }}</button>
+  <button class="chat-fab" type="button" aria-label="在线客服" @click="open = !open">
+    <svg v-if="open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+    <svg v-else viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 3a8 8 0 0 0-8 8v5.2A2.8 2.8 0 0 0 6.8 19H8v-6H6v-2a6 6 0 1 1 12 0v2h-2v6h1.2A2.8 2.8 0 0 0 20 16.2V11a8 8 0 0 0-8-8Z" />
+    </svg>
+  </button>
   <section v-if="open" class="chat-panel">
     <header class="chat-head">
-      <div>
-        <strong>在线咨询</strong>
-        <span>当前 IP {{ clientIp || '获取中' }}</span>
-      </div>
+        <div>
+          <strong>在线咨询</strong>
+          <span v-if="account">账号 {{ account }}</span>
+          <span>IP {{ clientIp || '获取中' }}</span>
+        </div>
       <span class="chat-status">{{ statusText }}</span>
     </header>
     <div ref="bodyRef" class="chat-body">
@@ -29,11 +37,13 @@ const open = ref(false)
 const text = ref('')
 const messages = ref([])
 const clientIp = ref('')
+const account = ref('')
 const statusText = ref('连接中')
 const bodyRef = ref(null)
 let socket
 let timer
 let manualClose = false
+let connectedToken = null
 
 function visitorToken() {
   let token = localStorage.getItem('archnova-visitor')
@@ -45,8 +55,19 @@ function visitorToken() {
 }
 
 function connect() {
-  if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) return
-  socket = new WebSocket(chatSocketUrl(`role=visitor&visitorToken=${encodeURIComponent(visitorToken())}`))
+  const shopToken = localStorage.getItem('archnova-shop-token') || ''
+  if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) && connectedToken === shopToken) return
+  manualClose = true
+  if (socket) {
+    socket.onclose = null
+    socket.close()
+  }
+  manualClose = false
+  connectedToken = shopToken
+  const query = new URLSearchParams({ role: 'visitor', visitorToken: visitorToken() })
+  if (shopToken) query.set('shopToken', shopToken)
+  if (!shopToken) account.value = ''
+  socket = new WebSocket(chatSocketUrl(query.toString()))
   socket.onopen = () => { statusText.value = '已连接' }
   socket.onclose = () => {
     if (manualClose) return
@@ -58,6 +79,7 @@ function connect() {
     const data = JSON.parse(event.data)
     if (data.type === 'ready') {
       clientIp.value = data.clientIp || ''
+      account.value = data.account || ''
       messages.value = data.messages || []
       scroll()
     }

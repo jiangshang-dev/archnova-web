@@ -1,31 +1,47 @@
 <template>
   <main class="page" v-if="product">
-    <div class="wrap detail">
-      <img v-if="product.cover" class="cover-photo" :src="fileUrl(product.cover)" alt="" />
-      <h1>{{ product.title }}</h1>
-      <p style="color: var(--muted)">{{ product.summary }}</p>
-      <p class="price">¥ {{ yuan(product.priceCent) }}　或　{{ product.pointsPrice }} 积分</p>
+    <div class="wrap">
+      <div class="goods">
+        <div>
+          <div class="gallery-main">
+            <img v-if="currentImage" :src="fileUrl(currentImage)" alt="" />
+            <span v-else class="gallery-empty">暂无图片</span>
+          </div>
+          <div v-if="gallery.length" class="thumbs">
+            <button v-for="item in gallery" :key="item" type="button" :class="{ on: item === currentImage }" @click="currentImage = item">
+              <img :src="fileUrl(item)" alt="" />
+            </button>
+          </div>
+        </div>
+        <div class="buybox">
+          <h1>{{ product.title }}</h1>
+          <p style="color: var(--muted); margin: 0">{{ product.summary }}</p>
+          <div class="price-board">
+            <div class="yen">¥ {{ yuan(product.priceCent) }}</div>
+            <div class="points">或 {{ product.pointsPrice }} 积分兑换</div>
+          </div>
+          <div>支付方式</div>
+          <div class="pay-options">
+            <button type="button" :class="{ on: payType === 'POINTS' }" @click="payType = 'POINTS'">积分</button>
+            <button type="button" :class="{ on: payType === 'ALIPAY' }" @click="payType = 'ALIPAY'">支付宝</button>
+            <button type="button" :class="{ on: payType === 'WECHAT' }" @click="payType = 'WECHAT'">微信</button>
+          </div>
+          <button class="buy-now" type="button" :disabled="loading" @click="buy">{{ loading ? '提交中' : '立即购买' }}</button>
+          <p style="color: var(--muted); font-size: 13px">支付完成后在「我的订单」查看源码地址。支付宝、微信超过 24 小时未支付会自动取消。</p>
+        </div>
+      </div>
+
+      <div class="detail-tabs"><span>图文详情</span></div>
       <div class="card markdown" v-html="html"></div>
       <div v-if="images.length" class="detail-images">
         <img v-for="item in images" :key="item" :src="fileUrl(item)" alt="" />
-      </div>
-      <div class="card" style="margin-top: 16px">
-        <div style="margin-bottom: 12px">支付方式</div>
-        <a-radio-group v-model:value="payType">
-          <a-radio value="POINTS">积分</a-radio>
-          <a-radio value="ALIPAY">支付宝</a-radio>
-          <a-radio value="WECHAT">微信</a-radio>
-        </a-radio-group>
-        <div style="margin-top: 16px">
-          <a-button type="primary" :loading="loading" @click="buy">立即购买</a-button>
-        </div>
       </div>
     </div>
   </main>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import MarkdownIt from 'markdown-it'
@@ -37,8 +53,14 @@ const router = useRouter()
 const product = ref(null)
 const payType = ref('POINTS')
 const loading = ref(false)
+const currentImage = ref('')
 const html = computed(() => md.render(product.value?.contentMd || ''))
 const images = computed(() => (product.value?.detailImages || '').split(',').map((item) => item.trim()).filter(Boolean))
+const gallery = computed(() => [product.value?.cover, ...images.value].filter(Boolean))
+
+watch(gallery, (list) => {
+  if (!currentImage.value && list.length) currentImage.value = list[0]
+})
 
 function yuan(cent) {
   return ((cent || 0) / 100).toFixed(2)
@@ -61,5 +83,6 @@ async function buy() {
 
 onMounted(async () => {
   product.value = await http.get(`/api/open/shop/products/${route.params.id}`)
+  currentImage.value = gallery.value[0] || ''
 })
 </script>

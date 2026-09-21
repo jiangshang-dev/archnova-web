@@ -41,7 +41,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         }
         String visitorToken = StrUtil.toStringOrNull(session.getAttributes().get("visitorToken"));
         try {
-            ChatSession chatSession = chatService.openVisitor(visitorToken, ip(session));
+            String account = StrUtil.toStringOrNull(session.getAttributes().get("customerName"));
+            ChatSession chatSession = chatService.openVisitor(visitorToken, ip(session), account);
             session.getAttributes().put("visitorToken", chatSession.getVisitorToken());
             session.getAttributes().put("sessionId", chatSession.getId());
             chatHub.bindVisitor(chatSession.getVisitorToken(), session);
@@ -49,6 +50,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             ready.put("type", "ready");
             ready.put("sessionId", chatSession.getId());
             ready.put("clientIp", chatSession.getClientIp());
+            ready.put("account", StrUtil.blankToDefault(account, ""));
             ready.put("messages", chatService.history(chatSession.getId(), false));
             chatHub.send(session, ready);
             pushSessions();

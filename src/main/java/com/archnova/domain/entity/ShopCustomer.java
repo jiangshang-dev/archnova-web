@@ -20,6 +20,8 @@ public class ShopCustomer {
 
     private String nickname;
 
+    private String email;
+
     private Integer points;
 
     private Integer status;

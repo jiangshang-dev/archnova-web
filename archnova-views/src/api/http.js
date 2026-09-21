@@ -10,7 +10,8 @@ const http = axios.create({
 http.interceptors.request.use((config) => {
   const token = localStorage.getItem('archnova-shop-token')
   const url = config.url || ''
-  if (token && url.startsWith('/api/shop') && !url.endsWith('/login') && !url.endsWith('/register')) {
+  const anonymous = url.endsWith('/login') || url.endsWith('/register') || url === '/api/shop/email-code'
+  if (token && url.startsWith('/api/shop') && !anonymous) {
     config.headers.Authorization = `Bearer ${token}`
   }
   return config

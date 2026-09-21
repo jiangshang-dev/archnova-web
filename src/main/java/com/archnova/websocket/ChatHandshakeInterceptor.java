@@ -30,6 +30,13 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
         attributes.put("ip", IpUtils.getIpAddr(httpRequest));
         attributes.put("role", StrUtil.blankToDefault(httpRequest.getParameter("role"), "visitor"));
         attributes.put("visitorToken", httpRequest.getParameter("visitorToken"));
+        String shopToken = httpRequest.getParameter("shopToken");
+        if (StrUtil.isNotBlank(shopToken)) {
+            var customer = tokenService.parse(shopToken);
+            if (customer != null && "CUSTOMER".equals(customer.getRole())) {
+                attributes.put("customerName", customer.getUsername());
+            }
+        }
         String token = httpRequest.getParameter("token");
         if (StrUtil.isNotBlank(token)) {
             attributes.put("loginUser", tokenService.parse(token));

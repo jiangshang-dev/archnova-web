@@ -26,14 +26,23 @@ public class ChatService {
     private final ChatSessionMapper chatSessionMapper;
     private final ChatMessageMapper chatMessageMapper;
 
-    public ChatSession openVisitor(String visitorToken, String clientIp) {
+    public ChatSession openVisitor(String visitorToken, String clientIp, String account) {
         AssertUtil.isNotBlank(visitorToken, "访客标识不能为空");
         AssertUtil.isTrue(visitorToken.matches("[A-Za-z0-9\\-]{8,64}"), "访客标识不正确");
         ChatSession session = chatSessionMapper.selectOne(
                 Wrappers.lambdaQuery(ChatSession.class).eq(ChatSession::getVisitorToken, visitorToken));
         if (session != null) {
-            if (StrUtil.isNotBlank(clientIp)) {
+            boolean changed = false;
+            if (StrUtil.isNotBlank(clientIp) && !clientIp.equals(session.getClientIp())) {
                 session.setClientIp(clientIp);
+                changed = true;
+            }
+            String name = displayName(visitorToken, account);
+            if (!name.equals(session.getVisitorName())) {
+                session.setVisitorName(name);
+                changed = true;
+            }
+            if (changed) {
                 session.setUpdateTime(LocalDateTime.now());
                 chatSessionMapper.updateById(session);
             }
@@ -41,7 +50,7 @@ public class ChatService {
         }
         session = new ChatSession();
         session.setVisitorToken(visitorToken);
-        session.setVisitorName("访客" + visitorToken.substring(visitorToken.length() - 4));
+        session.setVisitorName(displayName(visitorToken, account));
         session.setClientIp(clientIp);
         session.setLastMessage("");
         session.setUnreadCount(0);
@@ -93,6 +102,13 @@ public class ChatService {
                         .orderByAsc(ChatMessage::getId)
                         .last("limit 200"));
         return messages.stream().map(this::toView).toList();
+    }
+
+    private String displayName(String visitorToken, String account) {
+        if (StrUtil.isNotBlank(account)) {
+            return account;
+        }
+        return "访客" + visitorToken.substring(visitorToken.length() - 4);
     }
 
     public List<ChatSession> sessions() {

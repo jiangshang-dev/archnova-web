@@ -28,17 +28,39 @@ public class ShopController {
 
     @PostMapping("/register")
     public R<Map<String, Object>> register(@RequestBody AuthRequest request) {
-        return R.ok(shopCustomerService.register(request.getUsername(), request.getPassword(), request.getNickname()));
+        return R.ok(shopCustomerService.register(request.getEmail(), request.getCode(), request.getUsername(), request.getPassword()));
     }
 
     @PostMapping("/login")
     public R<Map<String, Object>> login(@RequestBody AuthRequest request) {
-        return R.ok(shopCustomerService.login(request.getUsername(), request.getPassword()));
+        return R.ok(shopCustomerService.login(request.getAccount(), request.getPassword()));
+    }
+
+    @PostMapping("/email-code")
+    public R<Void> emailCode(@RequestBody AuthRequest request) {
+        shopCustomerService.sendRegisterCode(request.getEmail());
+        return R.ok();
     }
 
     @GetMapping("/me")
     public R<Map<String, Object>> me() {
         return R.ok(shopCustomerService.profile());
+    }
+
+    @PostMapping("/profile/nickname")
+    public R<Map<String, Object>> nickname(@RequestBody AuthRequest request) {
+        return R.ok(shopCustomerService.updateNickname(request.getNickname()));
+    }
+
+    @PostMapping("/profile/email-code")
+    public R<Void> profileEmailCode(@RequestBody AuthRequest request) {
+        shopCustomerService.sendEmailCode(request.getEmail());
+        return R.ok();
+    }
+
+    @PostMapping("/profile/email")
+    public R<Map<String, Object>> profileEmail(@RequestBody AuthRequest request) {
+        return R.ok(shopCustomerService.updateEmail(request.getEmail(), request.getCode()));
     }
 
     @PostMapping("/orders")
@@ -55,9 +77,12 @@ public class ShopController {
 
     @Data
     public static class AuthRequest {
+        private String account;
         private String username;
         private String password;
         private String nickname;
+        private String email;
+        private String code;
     }
 
     @Data

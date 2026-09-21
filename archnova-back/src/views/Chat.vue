@@ -4,7 +4,7 @@
       <div style="overflow: auto; border-right: 1px solid #efe8dc">
         <div v-for="item in sessions" :key="item.id" class="session-item" :class="{ active: current === item.id }" @click="choose(item)">
           <div style="display: flex; justify-content: space-between">
-            <b>{{ item.visitorName }}</b>
+            <b>{{ accountName(item) }}</b>
             <a-badge v-if="item.unreadCount" :count="item.unreadCount" />
           </div>
           <div class="ip">IP {{ item.clientIp || '未知' }}</div>
@@ -13,7 +13,7 @@
       </div>
       <div>
         <div class="messages" ref="box">
-          <div v-if="current && activeSession" class="ip" style="margin-bottom: 8px">正在回复 {{ activeSession.visitorName }} · {{ activeSession.clientIp }}</div>
+          <div v-if="current && activeSession" class="ip" style="margin-bottom: 8px">正在回复 {{ accountName(activeSession) }} · IP {{ activeSession.clientIp || '未知' }}</div>
           <div v-for="item in messages" :key="item.id" class="bubble" :class="item.senderType">{{ item.content }}</div>
         </div>
         <a-input-search v-model:value="text" enter-button="发送" placeholder="回复访客" @search="send" />
@@ -37,6 +37,11 @@ let socket
 let timer
 let manualClose = false
 const activeSession = computed(() => sessions.value.find((item) => item.id === current.value))
+
+function accountName(item) {
+  if (item?.visitorName && !item.visitorName.startsWith('访客')) return `账号 ${item.visitorName}`
+  return '未登录访客'
+}
 
 function connect() {
   const token = localStorage.getItem('archnova-token')

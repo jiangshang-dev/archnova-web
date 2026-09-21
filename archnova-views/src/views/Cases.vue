@@ -11,6 +11,7 @@
       </div>
       <div class="grid-3">
         <router-link v-for="item in shown" :key="item.id" :to="`/cases/${item.id}`" class="card case-card">
+          <img v-if="item.cover" :src="fileUrl(item.cover)" alt="" class="case-cover" />
           <div class="cat">{{ item.category }}</div>
           <h3>{{ item.title }}</h3>
           <p>{{ item.summary }}</p>
@@ -26,7 +27,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import http from '../api/http'
+import http, { fileUrl } from '../api/http'
 
 const filters = ['全部', '小程序', 'App', '网站', '企业系统', '桌面应用']
 const category = ref('全部')

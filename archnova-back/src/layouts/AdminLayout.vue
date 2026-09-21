@@ -5,6 +5,8 @@
       <a-menu theme="dark" mode="inline" :selected-keys="[selected]" :style="{ background: '#1c2b27' }">
         <a-menu-item key="/"><router-link to="/">概览</router-link></a-menu-item>
         <a-menu-item key="/cases"><router-link to="/cases">项目案例</router-link></a-menu-item>
+        <a-menu-item key="/shop-products"><router-link to="/shop-products">源码商品</router-link></a-menu-item>
+        <a-menu-item key="/shop-orders"><router-link to="/shop-orders">商城订单</router-link></a-menu-item>
         <a-menu-item key="/contacts"><router-link to="/contacts">客户留言</router-link></a-menu-item>
         <a-menu-item key="/chat"><router-link to="/chat">在线客服</router-link></a-menu-item>
         <a-menu-item key="/config"><router-link to="/config">联系方式</router-link></a-menu-item>

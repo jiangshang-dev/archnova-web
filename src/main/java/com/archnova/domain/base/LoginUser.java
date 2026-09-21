@@ -14,5 +14,10 @@ public class LoginUser {
 
     private String realName;
 
+    /**
+     * ADMIN 或 CUSTOMER
+     */
+    private String role;
+
     private String token;
 }

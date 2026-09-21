@@ -16,6 +16,11 @@ spring:
     multipart:
       max-file-size: 8MB
       max-request-size: 8MB
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: admin
+    password: admin
 
 mybatis-plus:
   configuration:
@@ -30,4 +35,25 @@ mybatis-plus:
 archnova:
   jwt-secret: archnova-studio-jwt-secret-key-2026
   jwt-expire-hours: 168
-  upload-dir: uploads
+  #配置文件存储服务类型，可选配置[local,aliyun,minio,rustfs]
+  oss:
+    type: aliyun
+    accessKey: your-access-key
+    secretKey: your-secret-key
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucketName: dinenova
+    folder: uploads
+  order:
+    # 待支付订单超时取消，默认 24 小时
+    cancel-delay-ms: 86400000
+  pay:
+    alipay:
+      app-id:
+      private-key:
+      alipay-public-key:
+      notify-url:
+    wechat:
+      app-id:
+      mch-id:
+      api-v3-key:
+      notify-url:

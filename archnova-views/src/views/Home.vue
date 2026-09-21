@@ -62,7 +62,7 @@
     <section class="band">
       <div>
         <h2>有想法，先说清楚场景</h2>
-        <p>微信、邮箱或右下角在线客服都可以。</p>
+        <p>微信、邮箱或右下角在线客服都可以。客服会记录你的访问 IP，方便我们回访。</p>
       </div>
       <router-link class="btn btn-solid" to="/contact">联系我们</router-link>
     </section>

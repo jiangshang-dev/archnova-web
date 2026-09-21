@@ -7,6 +7,7 @@
     <nav class="nav">
       <router-link to="/services">服务</router-link>
       <router-link to="/cases">案例</router-link>
+      <router-link to="/shop">源码</router-link>
       <router-link to="/github">GitHub</router-link>
       <router-link to="/contact" class="nav-cta">联系我们</router-link>
     </nav>

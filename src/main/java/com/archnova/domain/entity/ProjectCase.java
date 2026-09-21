@@ -27,6 +27,8 @@ public class ProjectCase {
 
     private String cover;
 
+    private String detailImages;
+
     private String demoUrl;
 
     private String githubUrl;

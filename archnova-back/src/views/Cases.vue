@@ -32,6 +32,20 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-form-item label="封面">
+          <img v-if="form.cover" :src="fileUrl(form.cover)" alt="" style="width: 160px; margin-bottom: 8px; border-radius: 8px" />
+          <a-upload :show-upload-list="false" accept="image/*" :custom-request="uploadCover">
+            <a-button>上传封面</a-button>
+          </a-upload>
+        </a-form-item>
+        <a-form-item label="详情图片">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px">
+            <img v-for="(item, index) in detailImages" :key="item" :src="fileUrl(item)" alt="" style="width: 88px; height: 88px; object-fit: cover; border-radius: 8px; cursor: pointer" @click="detailImages.splice(index, 1)" />
+          </div>
+          <a-upload :show-upload-list="false" accept="image/*" :custom-request="uploadDetail">
+            <a-button>添加详情图</a-button>
+          </a-upload>
+        </a-form-item>
         <a-form-item label="技术标签，逗号分隔"><a-input v-model:value="form.techStack" /></a-form-item>
         <a-form-item label="演示地址"><a-input v-model:value="form.demoUrl" /></a-form-item>
         <a-form-item label="GitHub 地址"><a-input v-model:value="form.githubUrl" /></a-form-item>
@@ -43,13 +57,14 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
-import http from '../api/http'
+import http, { fileUrl } from '../api/http'
 
 const categories = ['小程序', 'App', '网站', '企业系统', '桌面应用']
 const keyword = ref('')
 const records = ref([])
 const visible = ref(false)
 const form = reactive(blank())
+const detailImages = ref([])
 const pagination = reactive({ current: 1, pageSize: 10, total: 0 })
 const columns = [
   { title: '标题', dataIndex: 'title' },
@@ -60,7 +75,7 @@ const columns = [
 ]
 
 function blank() {
-  return { id: null, title: '', summary: '', content: '', category: '网站', techStack: '', demoUrl: '', githubUrl: '', sortNum: 0, status: 1 }
+  return { id: null, title: '', summary: '', content: '', category: '网站', techStack: '', cover: '', detailImages: '', demoUrl: '', githubUrl: '', sortNum: 0, status: 1 }
 }
 
 async function load() {
@@ -76,10 +91,29 @@ function onTable(page) {
 
 function open(record) {
   Object.assign(form, record ? { ...record } : blank())
+  detailImages.value = (form.detailImages || '').split(',').map((item) => item.trim()).filter(Boolean)
   visible.value = true
 }
 
+async function uploadCover(options) {
+  form.cover = await uploadImage(options.file)
+  options.onSuccess?.({})
+}
+
+async function uploadDetail(options) {
+  detailImages.value.push(await uploadImage(options.file))
+  options.onSuccess?.({})
+}
+
+async function uploadImage(file) {
+  const data = new FormData()
+  data.append('file', file)
+  const result = await http.post('/api/admin/oss/upload', data)
+  return result.url
+}
+
 async function save() {
+  form.detailImages = detailImages.value.join(',')
   await http.post('/api/admin/cases', form)
   visible.value = false
   message.success('已保存')

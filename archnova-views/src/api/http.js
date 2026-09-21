@@ -1,9 +1,19 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
+import router from '../router'
 
 const http = axios.create({
   baseURL: import.meta.env.VUE_APP_BASE_API || '',
   timeout: 20000
+})
+
+http.interceptors.request.use((config) => {
+  const token = localStorage.getItem('archnova-shop-token')
+  const url = config.url || ''
+  if (token && url.startsWith('/api/shop') && !url.endsWith('/login') && !url.endsWith('/register')) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
 })
 
 http.interceptors.response.use(
@@ -16,7 +26,12 @@ http.interceptors.response.use(
     return body.data
   },
   (error) => {
-    message.error(error.message || '网络异常')
+    const url = error.config?.url || ''
+    if (error.response?.status === 401 && url.startsWith('/api/shop')) {
+      localStorage.removeItem('archnova-shop-token')
+      router.push('/shop/login')
+    }
+    message.error(error.response?.data?.message || error.message || '网络异常')
     return Promise.reject(error)
   }
 )

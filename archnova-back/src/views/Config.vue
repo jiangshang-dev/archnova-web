@@ -58,7 +58,7 @@ async function save() {
 async function upload(options) {
   const data = new FormData()
   data.append('file', options.file)
-  const result = await http.post('/api/admin/upload', data)
+  const result = await http.post('/api/admin/oss/upload', data)
   form.wechat_qr = result.url
   options.onSuccess?.(result)
   message.success('二维码已上传，记得保存')

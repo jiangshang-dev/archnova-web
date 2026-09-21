@@ -26,6 +26,18 @@ public class TokenService {
                 .setPayload("uid", user.getId())
                 .setPayload("username", user.getUsername())
                 .setPayload("realName", StrUtil.blankToDefault(user.getRealName(), user.getUsername()))
+                .setPayload("role", "ADMIN")
+                .setExpiresAt(DateUtil.offsetHour(new Date(), expireHours))
+                .setKey(secretBytes())
+                .sign();
+    }
+
+    public String createCustomerToken(Long id, String username, String nickname) {
+        return JWT.create()
+                .setPayload("uid", id)
+                .setPayload("username", username)
+                .setPayload("realName", StrUtil.blankToDefault(nickname, username))
+                .setPayload("role", "CUSTOMER")
                 .setExpiresAt(DateUtil.offsetHour(new Date(), expireHours))
                 .setKey(secretBytes())
                 .sign();
@@ -44,6 +56,7 @@ public class TokenService {
             loginUser.setId(Convert.toLong(jwt.getPayload("uid")));
             loginUser.setUsername(Convert.toStr(jwt.getPayload("username")));
             loginUser.setRealName(Convert.toStr(jwt.getPayload("realName")));
+            loginUser.setRole(StrUtil.blankToDefault(Convert.toStr(jwt.getPayload("role")), "ADMIN"));
             loginUser.setToken(token);
             return loginUser;
         } catch (Exception ignored) {

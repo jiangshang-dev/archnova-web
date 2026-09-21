@@ -34,15 +34,13 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
-                    response.setStatus(401);
-                    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    response.getWriter().write(JSONUtil.toJsonStr(R.fail(401, "请先登录")));
-                }))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> writeJson(response, 401, "请先登录"))
+                        .accessDeniedHandler((request, response, accessDeniedException) -> writeJson(response, 403, "没有权限")))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/admin/login").permitAll()
-                        .requestMatchers("/api/admin/**").authenticated()
+                        .requestMatchers("/api/admin/login", "/api/shop/login", "/api/shop/register").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/shop/**").hasRole("CUSTOMER")
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -62,5 +60,12 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private void writeJson(jakarta.servlet.http.HttpServletResponse response, int code, String message) throws java.io.IOException {
+        response.setStatus(code);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.getWriter().write(JSONUtil.toJsonStr(R.fail(code, message)));
     }
 }

@@ -9,7 +9,6 @@ import com.archnova.mapper.ProjectCaseMapper;
 import com.archnova.service.AuthService;
 import com.archnova.service.ChatService;
 import com.archnova.service.ContactService;
-import com.archnova.service.FileService;
 import com.archnova.service.ProjectCaseService;
 import com.archnova.service.SiteConfigService;
 import lombok.Data;
@@ -22,9 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -38,7 +35,6 @@ public class AdminController {
     private final ProjectCaseService projectCaseService;
     private final ContactService contactService;
     private final ChatService chatService;
-    private final FileService fileService;
     private final ProjectCaseMapper projectCaseMapper;
 
     @PostMapping("/login")
@@ -119,11 +115,6 @@ public class AdminController {
     @GetMapping("/chat/sessions/{id}/messages")
     public R<Object> messages(@PathVariable Long id) {
         return R.ok(chatService.history(id, true));
-    }
-
-    @PostMapping("/upload")
-    public R<Map<String, String>> upload(@RequestParam("file") MultipartFile file) throws IOException {
-        return R.ok(Map.of("url", fileService.saveImage(file)));
     }
 
     @Data

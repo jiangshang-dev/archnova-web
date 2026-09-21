@@ -29,10 +29,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (StrUtil.startWithIgnoreCase(header, "Bearer ")) {
             LoginUser loginUser = tokenService.parse(StrUtil.subAfter(header, " ", false));
             if (loginUser != null && loginUser.getId() != null) {
+                String role = StrUtil.blankToDefault(loginUser.getRole(), "ADMIN");
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         loginUser,
                         null,
-                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role))
                 );
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

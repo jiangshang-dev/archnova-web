@@ -2,10 +2,10 @@
   <main class="page">
     <div class="wrap">
       <div class="kicker">GITHUB</div>
-      <h2 class="serif" style="font-size: 42px">公开仓库</h2>
+      <h2 class="serif" style="font-size: 42px">我们的开源项目</h2>
       <p style="color: var(--muted)">
         这些是可以打开看的代码。
-        <a :href="site.github_url" target="_blank" rel="noreferrer">{{ site.github_user }}</a>
+<!--        <a :href="site.github_url" target="_blank" rel="noreferrer">{{ site.github_user }}</a>-->
       </p>
       <div class="grid-3">
         <article v-for="item in repos" :key="item.name" class="card repo">

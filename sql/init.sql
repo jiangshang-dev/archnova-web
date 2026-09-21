@@ -40,6 +40,7 @@ CREATE TABLE project_case (
     category    VARCHAR(32)   NOT NULL COMMENT '小程序/App/网站/企业系统/桌面应用',
     tech_stack  VARCHAR(255)  NULL,
     cover       VARCHAR(512)  NULL,
+    detail_images TEXT        NULL COMMENT '详情图片，多个地址用英文逗号分隔',
     demo_url    VARCHAR(512)  NULL,
     github_url  VARCHAR(512)  NULL,
     sort_num    INT           NOT NULL DEFAULT 0,

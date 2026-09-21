@@ -27,8 +27,8 @@ public class AdminShopController {
 
     @GetMapping("/products")
     public R<PageResult<ShopProduct>> products(@RequestParam(defaultValue = "1") long page,
-                                                @RequestParam(defaultValue = "10") long size,
-                                                @RequestParam(required = false) String keyword) {
+                                               @RequestParam(defaultValue = "10") long size,
+                                               @RequestParam(required = false) String keyword) {
         return R.ok(shopProductService.page(page, size, keyword));
     }
 
@@ -46,14 +46,14 @@ public class AdminShopController {
 
     @GetMapping("/orders")
     public R<PageResult<ShopOrder>> orders(@RequestParam(defaultValue = "1") long page,
-                                            @RequestParam(defaultValue = "10") long size,
-                                            @RequestParam(required = false) Integer status) {
+                                           @RequestParam(defaultValue = "10") long size,
+                                           @RequestParam(required = false) Integer status) {
         return R.ok(shopOrderService.adminPage(page, size, status));
     }
 
     @GetMapping("/customers")
     public R<PageResult<ShopCustomer>> customers(@RequestParam(defaultValue = "1") long page,
-                                                  @RequestParam(defaultValue = "20") long size) {
+                                                 @RequestParam(defaultValue = "20") long size) {
         return R.ok(shopOrderService.customers(page, size));
     }
 

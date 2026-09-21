@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VUE_APP_')
-  const target = env.VUE_APP_SERVER_URL || 'http://127.0.0.1:8082'
+  const target = env.VUE_APP_SERVER_URL || 'http://127.0.0.1:8088'
   return {
     envPrefix: 'VUE_APP_',
     plugins: [vue()],

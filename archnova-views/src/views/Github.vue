@@ -9,13 +9,13 @@
       </p>
       <div class="grid-3">
         <article v-for="item in repos" :key="item.name" class="card repo">
-          <div class="lang">{{ item.language }} · {{ item.updatedAt }}</div>
+          <div class="lang">{{ item.language || '其他' }} · {{ item.githubUpdated }}</div>
           <h3>{{ item.name }}</h3>
-          <p>{{ item.description }}</p>
+          <p>{{ item.description || '暂无简介' }}</p>
           <a :href="item.htmlUrl" target="_blank" rel="noreferrer">在 GitHub 打开</a>
         </article>
       </div>
-      <p v-if="!repos.length" style="color: var(--muted)">仓库列表暂时没有拉到，可以直接打开 GitHub 主页。</p>
+      <p v-if="!repos.length" style="color: var(--muted)">还没有对外展示的开源项目。</p>
     </div>
   </main>
 </template>

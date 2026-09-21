@@ -2,9 +2,10 @@ package com.archnova.controller.open;
 
 import com.archnova.common.R;
 import com.archnova.domain.entity.ContactMessage;
+import com.archnova.domain.entity.GithubRepo;
 import com.archnova.domain.entity.ProjectCase;
 import com.archnova.service.ContactService;
-import com.archnova.service.GithubService;
+import com.archnova.service.GithubRepoService;
 import com.archnova.service.ProjectCaseService;
 import com.archnova.service.SiteConfigService;
 import com.archnova.utils.IpUtils;
@@ -28,7 +29,7 @@ public class OpenSiteController {
 
     private final SiteConfigService siteConfigService;
     private final ProjectCaseService projectCaseService;
-    private final GithubService githubService;
+    private final GithubRepoService githubRepoService;
     private final ContactService contactService;
 
     @GetMapping("/site")
@@ -47,8 +48,8 @@ public class OpenSiteController {
     }
 
     @GetMapping("/github")
-    public R<List<Map<String, Object>>> github() {
-        return R.ok(githubService.repos());
+    public R<List<GithubRepo>> github() {
+        return R.ok(githubRepoService.published());
     }
 
     @PostMapping("/contact")

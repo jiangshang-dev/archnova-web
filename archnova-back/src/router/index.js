@@ -4,6 +4,7 @@ import AdminLayout from '../layouts/AdminLayout.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Config from '../views/Config.vue'
 import Cases from '../views/Cases.vue'
+import Repos from '../views/Repos.vue'
 import Products from '../views/Products.vue'
 import Orders from '../views/Orders.vue'
 import Contacts from '../views/Contacts.vue'
@@ -20,6 +21,7 @@ const router = createRouter({
         { path: '', component: Dashboard },
         { path: 'config', component: Config },
         { path: 'cases', component: Cases },
+        { path: 'repos', component: Repos },
         { path: 'shop-products', component: Products },
         { path: 'shop-orders', component: Orders },
         { path: 'contacts', component: Contacts },
